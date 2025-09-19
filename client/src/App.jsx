@@ -1,13 +1,10 @@
 
 import React, { useEffect, useState } from 'react'
 
+const API = import.meta.env.VITE_API_BASE || '';
+
 function formatPST(iso) {
-  try {
-    const d = new Date(iso)
-    return d.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', hour: '2-digit', minute: '2-digit' })
-  } catch {
-    return iso
-  }
+  try { return new Date(iso).toLocaleString('en-US',{ timeZone:'America/Los_Angeles', hour:'2-digit', minute:'2-digit' }) } catch { return iso }
 }
 
 export default function App() {
@@ -23,14 +20,11 @@ export default function App() {
     setLoading(true)
     try {
       const [p, s] = await Promise.all([
-        fetch(`/api/projection?date=${d}&book=${encodeURIComponent(bookmaker)}&debug=${debugMode?1:0}`).then(r=>r.json()),
-        fetch(`/api/slate?date=${d}`).then(r=>r.json())
+        fetch(`${API}/api/projection?date=${d}&book=${encodeURIComponent(bookmaker)}&debug=${debugMode?1:0}`).then(r=>r.json()),
+        fetch(`${API}/api/slate?date=${d}`).then(r=>r.json())
       ])
-      setProjection(p)
-      setSlate(s)
-    } finally {
-      setLoading(false)
-    }
+      setProjection(p); setSlate(s)
+    } finally { setLoading(false) }
   }
 
   useEffect(()=>{ loadAll(date) },[])
@@ -56,12 +50,8 @@ export default function App() {
               <input type="checkbox" checked={debugMode} onChange={e=>setDebugMode(e.target.checked)} /> Debug
             </label>
             <button onClick={()=>loadAll(date)} className="px-3 py-1 rounded bg-black text-white">Refresh</button>
-            <a href={`/api/ics?date=${date}`} className="px-3 py-1 rounded border">Download .ics</a>
-            <button onClick={()=>{
-              const html = document.documentElement;
-              const isDark = html.classList.toggle('dark');
-              try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch {}
-            }} className="px-3 py-1 rounded border">Toggle Dark</button>
+            <a href={`${API}/api/ics?date=${date}`} className="px-3 py-1 rounded border">Download .ics</a>
+            <button onClick={()=>{ const h=document.documentElement; const d=h.classList.toggle('dark'); try{localStorage.setItem('theme',d?'dark':'light')}catch{} }} className="px-3 py-1 rounded border">Toggle Dark</button>
           </div>
         </div>
       </header>
@@ -85,16 +75,12 @@ export default function App() {
         </section>
       )}
 
-      {/* Ticker */}
       <section className="mb-6">
-        <style>{`
-        @keyframes scrollX { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .animate-ticker { animation: scrollX 25s linear infinite; }
-        `}</style>
+        <style>{`@keyframes scrollX{0%{transform:translateX(0)}100%{transform:translateX(-50%)}} .animate-ticker{animation:scrollX 25s linear infinite}`}</style>
         <div className="rounded-2xl shadow bg-white dark:bg-neutral-900 p-3 overflow-hidden">
           <div className="text-sm font-semibold mb-2">Today’s Slate (Ticker)</div>
           <div className="flex gap-8 py-1 whitespace-nowrap animate-ticker will-change-transform">
-            {slate?.games?.concat(slate?.games || []).map((g,i) => (
+            {slate?.games?.concat(slate?.games || []).map((g,i)=>(
               <div key={g.gamePk+'-'+i} className="min-w-[240px] flex-shrink-0">
                 <div className="text-xs text-gray-500 dark:text-gray-300">{formatPST(g.startTimePST)} PST</div>
                 <div className="font-semibold">{g.away.code} @ {g.home.code}</div>
@@ -105,7 +91,6 @@ export default function App() {
         </div>
       </section>
 
-      {/* Games table */}
       <section>
         <div className="rounded-2xl shadow overflow-hidden">
           <table className="min-w-full bg-white dark:bg-neutral-900">

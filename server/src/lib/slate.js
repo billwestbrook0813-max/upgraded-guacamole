@@ -26,7 +26,7 @@ export async function getSlate(dateStr) {
 
       const enrichPitcher = async (pp) => {
         if (!pp?.id) return null;
-        const peopleUrl = `https://statsapi.mlb.com/api/v1/people/${pp.id}?hydrate=stats(group=[pitching],type=[season])`
+        const peopleUrl = `https://statsapi.mlb.com/api/v1/people/${pp.id}?hydrate=stats(group=[pitching],type=[season])`;
         const { data } = await axios.get(peopleUrl, { timeout: 15000 });
         const person = data.people?.[0];
         let era = null, wins = null, losses = null;

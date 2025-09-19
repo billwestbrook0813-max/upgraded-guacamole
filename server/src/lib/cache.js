@@ -24,8 +24,6 @@ export async function cached(key, ttlSec, fetcher) {
     if (hit) return JSON.parse(hit);
   } catch {}
   const val = await fetcher();
-  try {
-    await r.set(key, JSON.stringify(val), 'EX', ttlSec);
-  } catch {}
+  try { await r.set(key, JSON.stringify(val), 'EX', ttlSec); } catch {}
   return val;
 }

@@ -3,9 +3,8 @@ import axios from 'axios';
 import { cached } from './cache.js';
 
 const ODDS_API_KEY = process.env.ODDS_API_KEY;
-const PREFERRED_BOOKS = (process.env.ODDS_BOOKMAKERS || '').split(',').map(s => s.trim()).filter(Boolean);
 
-export async function getOdds(/* dateStr */) {
+export async function getOdds() {
   if (!ODDS_API_KEY) throw new Error('Missing ODDS_API_KEY');
 
   const baseParams = {
@@ -29,7 +28,6 @@ export async function getOdds(/* dateStr */) {
     results.push(...data);
   }
 
-  // Normalize: keep bookmakers per event so client can choose
   const byEvent = {};
   for (const ev of results) {
     const key = ev.id;

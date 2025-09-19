@@ -13,22 +13,21 @@ app.get('/health', (_, res) => res.json({ ok: true }));
 
 app.get('/api/slate', async (req, res) => {
   try {
-    const date = req.query.date; // YYYY-MM-DD
+    const date = req.query.date;
     const data = await getSlate(date);
     res.json(data);
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Failed to fetch slate' });
   }
 });
 
 app.get('/api/odds', async (req, res) => {
   try {
-    const date = req.query.date; // not strictly used by Odds API
-    const data = await getOdds(date);
+    const data = await getOdds();
     res.json(data);
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Failed to fetch odds' });
   }
 });
@@ -36,11 +35,11 @@ app.get('/api/odds', async (req, res) => {
 app.get('/api/projection', async (req, res) => {
   try {
     const date = req.query.date;
-    const [slate, odds] = await Promise.all([getSlate(date), getOdds(date)]);
+    const [slate, odds] = await Promise.all([getSlate(date), getOdds()]);
     const result = computeProjection(slate, odds, { book: req.query.book, debug: req.query.debug });
     res.json(result);
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: 'Failed to compute projection' });
   }
 });
@@ -52,13 +51,7 @@ app.get('/api/ics', async (req, res) => {
     const toICSDate = (iso) => {
       const d = new Date(iso);
       const pad = (n)=> String(n).padStart(2,'0');
-      const yyyy = d.getFullYear();
-      const mm = pad(d.getMonth()+1);
-      const dd = pad(d.getDate());
-      const HH = pad(d.getHours());
-      const MM = pad(d.getMinutes());
-      const SS = pad(d.getSeconds());
-      return `${yyyy}${mm}${dd}T${HH}${MM}${SS}`;
+      return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
     };
     let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//MLB Runs//EN\r\n';
     for (const g of slate.games || []) {
@@ -82,6 +75,4 @@ app.get('/api/ics', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5177;
-app.listen(PORT, () => {
-  console.log(`Server listening on :${PORT}`);
-});
+app.listen(PORT, ()=> console.log(`Server listening on :${PORT}`));
