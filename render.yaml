@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: mlb-runs-projection-server
+    env: node
+    rootDir: server
+    plan: free
+    buildCommand: "npm install"
+    startCommand: "npm run start"
+    envVars:
+      - key: ODDS_API_KEY
+        sync: false
+      - key: PORT
+        value: "10000"
+      - key: ODDS_BOOKMAKERS
+        value: "betmgm,draftkings,fanduel,caesars,pointsbetus"
+      - key: REDIS_URL
+        sync: false
+
+  - type: static
+    name: mlb-runs-projection-client
+    rootDir: client
+    buildCommand: "npm install && npm run build"
+    staticPublishPath: "dist"
+    envVars:
+      - key: VITE_API_BASE
+        value: "https://mlb-runs-projection-server.onrender.com"
