@@ -15,7 +15,7 @@ services:
     name: mlb-runs-projection-client
     runtime: static
     rootDir: client
-    buildCommand: npm install && npx vite build
+    buildCommand: npm install && node ./node_modules/vite/bin/vite.js build
     staticPublishPath: dist
 
 
