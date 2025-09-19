@@ -2,7 +2,7 @@ services:
   # --- API (Express) ---
   - type: web
     name: mlb-runs-projection-server
-    runtime: node              # (preferred over 'env: node')
+    runtime: node
     rootDir: server
     buildCommand: npm install
     startCommand: npm run start
@@ -11,15 +11,14 @@ services:
         sync: false
       - key: ODDS_BOOKMAKERS
         value: betmgm,draftkings,fanduel,caesars,pointsbetus
-      - key: REDIS_URL
-        sync: false
 
   # --- Client (Static Site) ---
   - type: web
     name: mlb-runs-projection-client
-    runtime: static            # <-- this is the key bit
+    runtime: static
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: dist
+
 
 
