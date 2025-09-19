@@ -8,15 +8,15 @@ services:
     startCommand: "npm run start"
     envVars:
       - key: ODDS_API_KEY
-        sync: false
+        sync: false         # set this in the Render dashboard after creating the service
       - key: PORT
-        value: "10000"
+        value: "10000"      # Render will override at runtime; this is just a default
       - key: ODDS_BOOKMAKERS
         value: "betmgm,draftkings,fanduel,caesars,pointsbetus"
       - key: REDIS_URL
-        sync: false
+        sync: false         # optional (e.g., redis://...); leave unset if not using Redis
 
-  - type: static
+  - type: static_site        # <-- fix: was `static`
     name: mlb-runs-projection-client
     rootDir: client
     buildCommand: "npm install && npm run build"
